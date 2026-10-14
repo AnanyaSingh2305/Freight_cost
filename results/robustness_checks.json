@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "checks": [
+    "valid saved results load",
+    "changed inputs recompute existing session instead of returning cached rows",
+    "fresh session rejects stale saved inputs",
+    "corrupt saved JSON displays a warning without an application exception",
+    "Run analysis recovers and respects config.json evidence settings",
+    "corrupt optional evaluation report does not crash the dashboard"
+  ],
+  "application_exceptions": 0,
+  "method": "Streamlit AppTest with isolated source/data/results copies; real lexical recomputation."
+}

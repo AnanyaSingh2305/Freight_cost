@@ -191,6 +191,7 @@ route,week_of,cost_per_tonne_km,vs_own_history,vs_similar_routes,flagged,matched
 | [`results/encoder_verification.json`](results/encoder_verification.json) | ONNX embedding comparison with independent Sentence Transformers reference vectors. |
 | [`results/dashboard_checks.json`](results/dashboard_checks.json) | Streamlit interaction and explanation-refresh checks. |
 | [`results/explanation_checks.json`](results/explanation_checks.json) | Verification that the explanation update preserved all other export fields. |
+| [`results/robustness_checks.json`](results/robustness_checks.json) | Recovery checks for stale inputs, corrupt saved JSON and configuration changes. |
 
 There are zero generative LLM calls and no billed API inference. Encoder tokens are counted separately from generated text tokens. Local compute, storage and initial model downloads still consume resources; model download/setup time is excluded from the per-analysis runtime log.
 
@@ -204,9 +205,12 @@ After installing dependencies and downloading the semantic model, run:
 .\.venv\Scripts\python.exe -m freight_assistant.reproduce --offline
 .\.venv\Scripts\python.exe -m freight_assistant.verify_encoder
 .\.venv\Scripts\python.exe scripts/check_dashboard.py
+.\.venv\Scripts\python.exe scripts/audit_dashboard.py
 ```
 
-The checked-in reports record **43 passing tests**, **20 passing evidence-suitability cases**, **nine dashboard checks**, and identical CSV/audit hashes across **three fresh processes** in the tested environment. Coverage includes weighted rates, calendar gaps, no future-data leakage, peer exclusion, zero baselines, expired/future notes, partial-week coverage and nationwide-versus-peer confusion. The three supplied sample rows also match the expected numeric values, flags and note IDs.
+The checked-in reports record **63 passing tests**, **20 passing evidence-suitability cases**, **nine dashboard workflow checks**, **six failure-recovery checks**, and identical CSV/audit hashes across **three fresh processes** in the tested environment. Coverage includes weighted rates, calendar gaps, no future-data leakage, peer exclusion, zero baselines, expired/future notes, partial-week coverage and nationwide-versus-peer confusion. The three supplied sample rows also match the expected numeric values, flags and note IDs.
+
+The [project audit](AUDIT.md) records the reproduced failures and their fixes: stale input caches, exact-threshold rounding, malformed metadata/configuration, corrupt saved reports, invalid vector caches and numerical overflow. The supplied-data CSV remains byte-for-byte unchanged after these fixes.
 
 The evidence cases are development checks, not an independent held-out benchmark. The supplied data has no complete anomaly ground truth, so the project does not claim overall anomaly precision or recall. Reproducibility comparisons use the same inputs, code, configuration, model and environment; runtime/cache logs are kept outside the deterministic audit comparison.
 
@@ -224,6 +228,7 @@ freight_assistant/
   evidence.py             Source validation and evidence checks
   explanations.py         Measured, route-specific reason text
   pipeline.py             Shared analysis and export workflow
+  dashboard_state.py      Input fingerprints and saved-result validation
   reporting.py            CSV and JSON serialization
   questions.py            Route/month questions over computed rows
   evaluate.py             Labeled cases and unit-test runner
@@ -233,9 +238,11 @@ data/                     Supplied CSVs and reviewed note metadata
 evaluation/               Evidence cases and reference embeddings
 tests/                    Numerical, evidence and pipeline tests
 scripts/check_dashboard.py Dashboard interaction checks
+scripts/audit_dashboard.py Isolated dashboard failure-recovery checks
 results/                  Saved analysis and validation reports
 config.json               Detection and evidence defaults
 decisions.md              Design choices, tradeoffs and limitations
+AUDIT.md                  Audit findings, fixes and validation scope
 WALKTHROUGH.md             Ten-minute demonstration guide
 ```
 

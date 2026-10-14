@@ -29,8 +29,8 @@
   "token_count_definition": "Total input includes actual local encoder tokens. The encoder outputs vectors, not text tokens. Generative input/output are separately zero.",
   "rough_api_cost_usd": 0.0,
   "pricing_basis": "Local open-source encoder and deterministic templates; no billed generative API used.",
-  "runtime_seconds": 0.9415,
-  "retrieval_and_evidence_seconds": 0.8594,
+  "runtime_seconds": 0.9732,
+  "retrieval_and_evidence_seconds": 0.8355,
   "local_compute_note": "CPU time, memory, electricity and initial model download are not zero-cost resources.",
   "randomness": "FP32 CPU inference, sequential ONNX execution, one thread; no sampling, dropout or generation."
 }

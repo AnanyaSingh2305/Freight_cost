@@ -9,7 +9,7 @@ The interface has been refined with clearer system typography, a minimal sidebar
 | A: validation and weekly metrics | Complete | Strict CSV checks; 728 weekly groups; independent weighted-rate, calendar-window, peer and no-look-ahead fixtures |
 | B: anomaly policy and exact export | Complete | Configurable 15% default; three supplied example rows match costs, comparisons, flags and note IDs |
 | C: semantic retrieval and grounded evidence | Complete | Pinned MiniLM model via FP32 ONNX CPU inference; exact source quotes; route/time/effect/coverage/magnitude guards |
-| D: evaluation and reproducibility | Complete | 43 tests pass; 20 labeled evidence cases pass; three fresh-process CSV and full-audit hashes match |
+| D: evaluation and reproducibility | Complete | 63 tests pass; 20 labeled evidence cases pass; three fresh-process CSV and full-audit hashes match |
 | E: dashboard and constrained questions | Complete | AppTest passes nine checks, including explanation freshness; live browser confirms the review queue, route chart, N002 evidence and grounded March answer |
 | Packaging and walkthrough | Complete | Exact CSV, audit, cost/evaluation reports, dependency pins, README, launcher and ten-minute walkthrough |
 
@@ -29,11 +29,12 @@ Candidate-count sensitivity: 81 at 10%, 26 at 15%, and 19 at 20%. The threshold 
 
 ## Verification
 
-- `results/evaluation.json`: all 43 automated tests pass and all 20 reviewed evidence-suitability cases pass. No unsupported justification was produced on this small development set. This is not a held-out anomaly accuracy claim.
+- `results/evaluation.json`: all 63 automated tests pass and all 20 reviewed evidence-suitability cases pass. No unsupported justification was produced on this small development set. This is not a held-out anomaly accuracy claim.
 - `results/reproducibility.json`: three independent processes generate identical CSV bytes and full audit reports. CSV SHA-256: `5490cf0e1abfed4e62263e1484ed6f58f7bb00040b3d6f9c13813065be021a2e`.
 - `results/encoder_verification.json`: all ten ONNX note embeddings match independently generated Sentence Transformers reference vectors within `1e-5` tolerance. Maximum absolute difference is approximately `1.64e-7`.
 - `results/dashboard_checks.json`: initial render, summary metrics, review queue, route selection, grounded question answer, real semantic inference, and threshold/lexical rerun pass with zero application exceptions.
 - `results/explanation_checks.json`: the eight-column contract is preserved, all seven non-reason columns match the earlier export across 728 rows, and representative explanations are recorded. Reasons vary with measured facts; unknown causes remain unexplained.
+- `AUDIT.md` and `results/robustness_checks.json`: six issue groups fixed; six dashboard recovery checks pass. Input changes invalidate caches, corrupt saved results remain recoverable, and configuration/metadata/numeric boundaries are validated. The supplied-data CSV hash is unchanged.
 - `results/live_browser_checks.json`: the running local dashboard was verified in the browser; `results/dashboard_preview.jpg` shows the live opening view.
 - `results/token_cost_log.json`: actual local encoder tokens and inference batches are recorded separately from generative usage. Zero generative LLM calls and USD 0 API spend.
 

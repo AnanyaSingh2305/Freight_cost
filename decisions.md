@@ -132,4 +132,8 @@ Evidence: [`evaluation.json`](results/evaluation.json), [`reproducibility.json`]
 
 ## What would change beyond the case study
 
+The [functional audit](AUDIT.md) exposed an additional requirement: a saved result is useful only if its inputs are still current. Dashboard cache keys now include source files, the data inputs and configuration. Saved analysis must also pass input/source hash checks and basic result integrity checks. Corrupt saved files can be regenerated from the UI; corrupt derived vector caches can be rebuilt from the verified model. These checks add some file hashing on each dashboard rerun, which is acceptable for this small local dataset.
+
+The UI also reads the evidence defaults from `config.json`, keeping its settings consistent with the CLI. Threshold comparisons use a small floating-point tolerance so a mathematically exact 15% rise is not lost to binary rounding. This does not round genuinely lower increases up to the threshold.
+
 The next steps depend on real operational needs: collect labeled review outcomes to calibrate thresholds, evaluate unseen events, add a reviewed workflow for new notes, and introduce persistent ingestion and monitoring as volume grows. Authentication and access controls would be needed before sharing shipment data across users. Those are future extensions; the current deliverable remains a local, file-based application.
