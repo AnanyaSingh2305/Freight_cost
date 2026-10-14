@@ -1,161 +1,244 @@
-# Freight cost assistant
+# Freight Cost Monitor
 
-A local application that tracks weekly shipping costs, detects unusual increases, and checks whether the supplied context notes support an explanation. The numerical calculations, flags and note IDs are deterministic. AI is used for semantic evidence retrieval; explanations quote validated source text.
+A local application for finding unusual weekly freight costs and checking whether the available context explains them. Built for the FreightTiger internship case study using the supplied shipment records and context notes.
 
-## Quick start
+The app answers three questions: **Where did costs rise? How unusual is the rise? Is there evidence that explains it?** Each result includes measured comparisons and a reason that can be checked against the original notes.
 
-Use Python 3.12 or 3.14. Both local environments have been exercised. From this directory:
+[Architecture](#high-level-architecture) · [Run locally](#run-locally) · [Analysis rules](#how-the-analysis-works) · [Outputs](#outputs) · [Validation](#validation-and-reproducibility) · [Design decisions](decisions.md)
+
+![Freight Cost Monitor dashboard](results/dashboard_preview.jpg)
+
+## What you can do
+
+- Review unusual route-weeks and filter by route, route type or verdict.
+- Compare weekly rates with a route's own history and similar routes.
+- Inspect supporting notes, event dates and rejected evidence.
+- Ask questions such as **“Why did Chennai-Bangalore get pricier in March 2025?”**
+- Change the anomaly threshold or retrieval mode and download the complete submission CSV.
+
+The project uses a local sentence encoder for semantic retrieval. Calculations, evidence checks, verdicts and explanation text follow explicit rules. It does not call a generative LLM or require an API key.
+
+## High-level architecture
+
+```mermaid
+flowchart TB
+    subgraph inputs [Inputs]
+        shipments["Shipment records"]
+        notes["Context notes and reviewed event metadata"]
+        settings["Threshold and evidence settings"]
+        contract["Sample output schema"]
+    end
+
+    subgraph analysis [Shared Python pipeline called by the CLI and dashboard]
+        validate["Validate inputs and output contract"]
+        metrics["Calculate weekly rates, history and peers"]
+        detect{"Unusual rising cost?"}
+        retrieve["Rank notes using local MiniLM or lexical search"]
+        evidence["Check route, dates, impact, coverage and magnitude"]
+        explain["Assign verdict and write a factual reason"]
+
+        validate --> metrics --> detect
+        detect -->|Yes| retrieve --> evidence --> explain
+        detect -->|No| explain
+    end
+
+    shipments --> validate
+    notes --> validate
+    contract --> validate
+    settings --> detect
+    notes --> retrieve
+    notes --> evidence
+    settings --> evidence
+    explain --> dashboard["Streamlit dashboard: review, charts, questions and downloads"]
+    explain --> export["CLI exports: CSV, audit, summary and token/cost log"]
+```
+
+[`pipeline.py`](freight_assistant/pipeline.py) is the common entry point, so the UI and CLI use the same calculations and evidence rules. Only anomaly candidates enter note retrieval. Normal rows still receive their own measured explanation and appear in the export.
+
+Retrieval ranks the ten supplied notes; every ranked note is then checked. A high similarity score alone cannot justify a rise. Source hashes and reviewed annotations connect accepted explanations to exact quotes and applicable event windows. Evaluation and reproducibility reports are generated separately by the validation commands below.
+
+## Run locally
+
+### Requirements
+
+- Python **3.12 or 3.14**, the versions exercised during development.
+- Git and, optionally, VS Code.
+- Internet access for installing dependencies and downloading the semantic model the first time.
+
+These commands use **Windows PowerShell** and call the virtual environment directly, so activating it is optional.
 
 ```powershell
+git clone https://github.com/AnanyaSingh2305/Freight_cost.git
+cd Freight_cost
 python -m venv .venv
-.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-python -m freight_assistant
-python -m streamlit run app.py
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m freight_assistant
+.\.venv\Scripts\python.exe -m streamlit run app.py
 ```
 
-For this prepared local project, open the folder in VS Code and select **Run and Debug → FreightTiger: live dashboard**, then press **F5**. VS Code's Python Debugger extension is required for F5; **Terminal → Run Task → FreightTiger: run dashboard** also starts it without debugging. The project settings select `.venv/Scripts/python.exe`, so package installation and execution use the same interpreter. Open `http://127.0.0.1:8501/` once the terminal reports the server has started.
+Open **[http://127.0.0.1:8501](http://127.0.0.1:8501)** after Streamlit starts. The analysis command regenerates the files in `results/` before the dashboard opens.
 
-The PowerShell shortcut is `./run_demo.ps1`. It checks the chosen environment's imports before starting the server. If another copy is already running on port 8501, use that dashboard or stop its terminal with Ctrl+C before starting a second copy.
+The first semantic analysis downloads the pinned `sentence-transformers/all-MiniLM-L6-v2` model into `.cache/models/`. Model weights and virtual environments are excluded from Git. To reproduce the full tested dependency set, install `requirements-lock.txt` instead of `requirements.txt` in a fresh environment.
 
-The first semantic run downloads the pinned `sentence-transformers/all-MiniLM-L6-v2` model. It runs on the CPU without an API key. Subsequent runs can operate offline:
+### Launch from VS Code
+
+Open this repository folder, install the recommended Python and Python Debugger extensions, then select **Run and Debug → FreightTiger: live dashboard → F5**. Alternatively, use **Terminal → Run Task → FreightTiger: run dashboard** or run `./run_demo.ps1` after installing dependencies. Reuse an existing server on port 8501 or stop it before starting another copy.
+
+### Work offline
+
+Once the model has been downloaded, semantic analysis can run without network access:
 
 ```powershell
-python -m freight_assistant --offline
+.\.venv\Scripts\python.exe -m freight_assistant --offline
 ```
 
-You can download the model separately with `python -m freight_assistant.download_model`. All six inference artifacts are fetched from the exact pinned revision and recorded in a SHA-256 manifest. `requirements-lock.txt` pins the full tested dependency set; use it instead of `requirements.txt` when reproducing the tested environment.
-
-For an immediate offline baseline, the analytical CLI and all numerical/evidence unit tests use only Python's standard library:
+For analysis without downloading a model, use the explicit lexical baseline. Its CLI path uses Python's standard library:
 
 ```powershell
-python -m freight_assistant --retriever lexical --output-dir results/lexical
-python -m unittest discover -s tests -v
+.\.venv\Scripts\python.exe -m freight_assistant --retriever lexical --output-dir results/lexical
 ```
 
-Lexical mode uses TF-IDF/cosine ranking. It is an explicitly labeled baseline, not neural AI. There is no silent fallback from semantic to lexical retrieval.
+Lexical mode uses TF-IDF and cosine similarity. Semantic mode uses the local encoder through ONNX Runtime and Hugging Face Tokenizers. A failed semantic run reports an error rather than silently switching modes.
 
-## Case-study requirements and implementation
+## Using the dashboard
 
-The dashboard uses an offline system-font stack, restrained orange accents and responsive summary cards. Review rows use plain-language statuses and are ordered by the largest history-relative increase. **Checks & cost** explains the weekly rate, historical baseline and peer baseline in readable cards; configuration details remain expandable. The exported submission CSV retains the case study's original schema and ordering. Styles are maintained in `assets/dashboard.css`.
+1. Set **Unusual increase threshold (%)** and choose an **Evidence search** mode.
+2. Click **Run analysis** to apply those settings. Editing a form field alone does not update the results.
+3. Start in **Review queue** to inspect unexplained weeks. Use **Route explorer** to see the trend and a selected week's explanation.
+4. Use **Ask about findings** for one named route and, optionally, a month and year. This is a constrained query over computed results.
+5. Open **Checks & cost** for the comparison basis, active configuration and usage details. Use **Download complete submission CSV** for all route-weeks, including normal rows.
 
-| Requirement | Implementation |
-|---|---|
-| Route and supplied route type | Directed origin/destination; no inferred distance buckets |
-| Monday-Sunday weeks | `week_of` is the Monday containing `shipment_date` |
-| Weekly cost per tonne-km | Sum of freight costs divided by sum of shipment quantity × distance |
-| Own history | Arithmetic mean of weekly rates in the prior eight calendar weeks; current week excluded |
-| Similar routes | Same-week arithmetic mean of all other routes in the same route type |
-| Unusual rising cost | Configurable threshold over either baseline, with a positive rise versus history or the previous observed week |
-| Relevant context | Dense semantic ranking followed by route, time, cost-impact, coverage and magnitude checks |
-| Grounded justification | Exact note quote, ID and event dates in reason; ID also in `matched_note_id` |
-| No evidence | `Yes`, unexplained, and blank `matched_note_id` |
-| Reproducibility | Three fresh-process runs compare full CSV and audit hashes |
-| Evaluation | Independent numerical fixtures and 20 labeled evidence-suitability cases |
-| Cost | Actual encoder input tokens and inference batches; separately zero generative LLM calls/output and zero API spend |
+Changing dashboard settings updates that session and its download. To regenerate the saved submission files, run the CLI with the desired configuration.
 
-## Calculation choices
+## How the analysis works
 
-The weekly rate is:
+### Weekly rate and comparison baselines
+
+Routes are directed origin–destination pairs. The supplied `route_type` determines the peer group. Weeks run **Monday through Sunday**, with `week_of` set to Monday.
 
 ```text
-sum(freight_cost_inr) / sum(quantity_tonnes * distance_km)
+weekly cost per tonne-km = sum(freight_cost_inr)
+                          / sum(quantity_tonnes × distance_km)
+
+percentage difference = 100 × (current rate / baseline − 1)
 ```
 
-This is a tonne-km-weighted shipment rate. It avoids averaging a tiny shipment equally with a large one. The supplied three example rows' rounded costs, percentage comparisons, flags and note IDs are checked against the output. These example checks supplement independently hand-calculated tests; the sample is not a complete labeled anomaly dataset.
+| Comparison | Definition |
+| --- | --- |
+| Own history | Arithmetic mean of available weekly rates in the previous eight calendar weeks. The current week is excluded. |
+| Similar routes | Arithmetic mean of other routes' rates in the same week and supplied route type. The selected route is excluded. |
+| Previous observed week | The route's most recent earlier observation, used as an additional check that costs are rising. |
 
-History includes only observations within `[current Monday - 8 weeks, current Monday)`. When fewer than eight prior observations are available, use all available observations in that window. Do not pad, extrapolate, insert zero-cost weeks, or pull older observations outside the calendar window. The supplied dataset has no missing route-weeks, so an eight-observation and eight-calendar-week window coincide here.
+Missing weeks are not filled with zeros or replaced by older observations. Missing or zero baselines have an undefined percentage, shown as `N/A` in the CSV. A positive rate after a zero historical baseline is still treated as a rise. Calculations keep full precision; exported costs use two decimals and comparisons use one decimal.
 
-Peer means give each other route one vote regardless of its shipment volume. Internal calculations retain floating-point precision using stable summation. CSV cost is rounded to two decimals and comparisons to one decimal with a signed percentage and the sample's suffix.
+### Detection and evidence
 
-Missing or zero baselines produce `N/A (...)` comparison text, not fabricated zero changes. The audit retains null numerical differences and counts of available history/peers. No ratio can be computed against a zero baseline.
+At the default setting, a route-week becomes a candidate when it is **at least 15% above history or peers**, and also shows a positive rise versus history or the previous observed week. The threshold is an implementation assumption because the brief does not prescribe one. See [`decisions.md`](decisions.md) for the rationale and edge cases.
 
-A positive rate after a zero historical rate is still an unusual rise and is flagged, while its undefined percentage remains `N/A`.
+Candidate notes must pass route applicability, publication/event dates, cost impact, shipment coverage and any stated magnitude limits. By default, at least **75% of the week's shipment tonne-km** must fall within the supported event window and on or after the note's publication date. A quantified note has a **two-percentage-point magnitude tolerance**. These controls live in [`config.json`](config.json).
 
-## Anomaly and export policy
+A nationwide increase cannot explain a route-specific premium over peers. An expired disruption cannot explain shipments after its event window. New or altered notes require reviewed annotations before they can justify a verdict.
 
-The brief does not prescribe a threshold. The default `config.json` uses 15% over own history **or** peers, together with a positive increase over history **or** the previous observed week. A stable route that is structurally expensive versus peers does not pass the rise condition. Candidate-count sensitivity at 10%, 15% and 20% is saved in `summary.json`; the default was not optimized to reproduce sample labels.
+| Setting in `config.json` | Default | Purpose |
+| --- | ---: | --- |
+| `anomaly_threshold_pct` | `15.0` | Minimum uplift against history or peers. |
+| `minimum_rise_pct` | `0.0` | Rise must exceed this value against history or the previous observed week. |
+| `minimum_evidence_coverage` | `0.75` | Minimum share of shipment tonne-km supported by an event. |
+| `magnitude_tolerance_pct` | `2.0` | Percentage-point allowance when checking a quantified note. |
 
-Every observed route-week is exported. These choices are documented because the sample only illustrates unexplained and justified candidates:
+| CSV `flagged` value | Meaning |
+| --- | --- |
+| `No` | No unusual rising cost under the active policy. |
+| `Yes` | Unusual rise with insufficient supporting evidence. Review is needed. |
+| `No (justified)` | Unusual rise supported by applicable context. |
 
-- `No`: no unusual rising cost under the configured policy.
-- `Yes`: unusual candidate with insufficient contextual evidence; human review required.
-- `No (justified)`: unusual candidate with applicable supporting evidence.
+Justified rows include an exact source quote, note ID, event dates and shipment coverage. Unexplained rows keep `matched_note_id` blank. Reasons include each route-week's measurements and relevant evidence failures; they do not invent causes to make the wording different. Supporting context does not establish the precise causal amount of a rise.
 
-The eight columns exactly match `sample_output_format_v2.csv`, in its original order. Detailed diagnostics stay in `audit.json`; they do not add CSV columns.
+## Results on the supplied data
 
-Each `reason` states the route/week, actual rate, historical and peer baselines, percentage differences and applicable threshold. Normal rows distinguish below-threshold costs from elevated costs without a qualifying rise. Flagged rows describe relevant evidence failures in plain language, such as an expired flood window or a nationwide event that cannot explain a peer premium. Justified rows retain the original note quote, event dates and shipment coverage. Shared verdicts or causes may legitimately recur; wording is never randomized and unsupported causes are never invented. Refreshing analysis after a source update preserves the active threshold and retrieval mode while invalidating stale explanations.
+The checked-in run uses semantic retrieval and the default 15% threshold:
 
-## Evidence and AI design
+| Measure | Result |
+| --- | ---: |
+| Shipments | 2,940 |
+| Directed routes | 7 |
+| Route-weeks | 728 |
+| Unusual rising-cost candidates | 26 |
+| Supported by context | 3 |
+| Unexplained and flagged | 23 |
+| Normal route-weeks | 702 |
 
-`retrieval.py` embeds the original notes and each anomaly question using an open-source sentence encoder pinned to commit `1110a243fdf4706b3f48f1d95db1a4f5529b4d41`. With ten notes, a NumPy vector matrix and cosine similarity are sufficient; a separate vector-database service would add setup without improving this corpus. The small index is persisted using a hash of source text, backend and model revision. Unquantized ONNX CPU inference uses sequential execution and one thread. Tokenization, masked mean pooling and L2 normalization follow the model's configuration and model card. Ranked ties use note ID.
+The supported weeks are Ahmedabad–Mumbai on **20 January 2025** (festival surcharge, N002) and Chennai–Bangalore on **24 February and 3 March 2025** (flood disruption, N001). Later March shipments do not inherit the expired flood explanation.
 
-The implementation uses ONNX Runtime and Hugging Face Tokenizers directly to avoid importing training dependencies at startup. A first successful Sentence Transformers run supplied an independent embedding reference for checking the ONNX implementation. No fine-tuning is required for this small retrieval task.
-
-All ten notes are considered after ranking, so a top-k cutoff cannot hide valid evidence. Route-specific eligible evidence takes precedence over nationwide evidence. No similarity score alone authorizes a justification.
-
-`data/note_annotations.json` contains transparent, source-reviewed event metadata. These are not route-week anomaly labels. Each annotation carries the source hash, exact quote, dates, cost effect and an interpretation note. This intentionally makes the small supplied corpus auditable instead of asking a generative model to invent dates. Changed source text requires review; new unreviewed notes can be retrieved but cannot justify a verdict. Extending to arbitrary new notes would require a reviewed extraction workflow.
-
-Specific interpretations and safeguards:
-
-- Flood N001: February 24 through March 8, 2025. March 9 onward is outside the disruption window.
-- Festival N002: the Monday-Sunday week containing January 20, 2025. This interpretation is explicit in the annotation.
-- Fuel N003: persistent price level from May 5, 2025, with no stated end. It supports only a roughly 5-7% rise, with a configurable two-percentage-point tolerance. It cannot explain a route-specific peer premium or a new rise after the event is already reflected in all historical baseline weeks.
-- Irrelevant tolls, no-cost-impact maintenance, normal conditions, recovery notices and absorbed compliance costs never support an increased-cost verdict.
-- At least 75% of the week's shipment tonne-km must fall in the event window and occur on/after the note publication date. This conservative coverage threshold is a documented implementation assumption. A partial week explanation states its actual coverage.
-- Unquantified disruption notes support a contextual explanation, not proof of the precise causal amount. This limitation is stated in every justified reason.
-
-There is no generative LLM in the submitted pipeline. This avoids invented explanations, paid API dependencies and stochastic verdicts while retaining neural semantic retrieval. The optional question box supports a named route, an optional month and year, and returns computed findings with evidence. It is deliberately a constrained query interface, not an unrestricted chatbot.
-
-## Validate and reproduce
-
-```powershell
-python -m unittest discover -s tests -v
-python -m freight_assistant.evaluate --offline
-python -m freight_assistant.reproduce --offline
-python -m freight_assistant.verify_encoder
-python scripts/check_dashboard.py
-```
-
-The evidence evaluation has 20 reviewed cases including wrong routes, dates before/after events, unaffected costs, recovery notes, insufficient magnitude, partial-week coverage and nationwide-vs-peer confusion. One positive case asks whether a 6% fuel rise has supporting context; it evaluates evidence suitability, not whether the default 15% detector would flag that row.
-
-Results are development-time checks, not an independent held-out estimate of anomaly accuracy. We do not claim precision/recall for all anomalies because the company did not provide ground-truth anomaly labels.
-
-Three CLI subprocesses recompute the full pipeline from unchanged inputs. Model weights and note vectors may be cached; route metrics, query embeddings, flags, evidence checks and output are recomputed. Full CSV and audit hashes are compared. Runtime and cache-use logs vary and are excluded from deterministic hash comparisons.
+Candidate counts change from **81 at 10%**, to **26 at 15%**, to **19 at 20%**. These are sensitivity results, not accuracy scores. See [`results/summary.json`](results/summary.json).
 
 ## Outputs
 
-- `results/analysis_output.csv`: submission CSV.
-- `results/audit.json`: full-precision metrics, raw candidates, note checks, annotations, input hashes and environment.
-- `results/summary.json`: dataset counts and threshold sensitivity.
-- `results/evaluation.json`: labeled cases and unit-test results.
-- `results/reproducibility.json`: three independent runs and hashes.
-- `results/token_cost_log.json`: actual encoder tokens, runtime, model revision, generative usage and API cost.
-- `results/dashboard_checks.json`: dashboard test results when generated.
-- `results/encoder_verification.json`: parity check against the initial Sentence Transformers reference embeddings.
-- `results/live_browser_checks.json` and `results/dashboard_preview.jpg`: verification and preview of the locally running dashboard.
-- `WALKTHROUGH.md`: ten-minute demo sequence.
-
-For a full run, total model input tokens include actual local encoder tokens. There are zero generated text tokens and zero generative LLM calls. Model weights are local, so no published per-token API tariff applies and API spend is USD 0. Local CPU, memory, electricity and initial downloads still use resources. Download/setup work is excluded from per-run inference logs; cold vs warm note-vector cache status is recorded.
-
-## Source layout
+The submission preserves the sample's eight columns and ordering:
 
 ```text
-freight_assistant/
-  validation.py    strict ingestion and CSV contract
-  metrics.py       weekly rates and both baselines
-  detection.py     configurable anomaly policy
-  retrieval.py     dense and lexical evidence ranking
-  evidence.py      applicability and verdict checks
-  reporting.py     exact CSV and audit serialization
-  explanations.py measured comparisons and relevant evidence rejection messages
-  pipeline.py      shared analysis path
-  evaluate.py     reviewed evidence eval + unit tests
-  reproduce.py    fresh-process repeat check
-  questions.py    grounded route/month queries
-app.py            Streamlit dashboard
-tests/            independent fixtures and integration checks
-data/             original CSVs and reviewed annotations
+route,week_of,cost_per_tonne_km,vs_own_history,vs_similar_routes,flagged,matched_note_id,reason
 ```
 
-Technical references: [Sentence Transformers](https://www.sbert.net/examples/sentence_transformer/applications/semantic-search/README.html), [ONNX Runtime](https://onnxruntime.ai/docs/api/python/api_summary.html), [Streamlit charts](https://docs.streamlit.io/develop/api-reference/charts/st.line_chart), [pinned model](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/tree/1110a243fdf4706b3f48f1d95db1a4f5529b4d41).
+| File | What it contains |
+| --- | --- |
+| [`results/analysis_output.csv`](results/analysis_output.csv) | Every observed route-week and its final explanation. |
+| [`results/audit.json`](results/audit.json) | Full-precision metrics, candidate flags, note checks, source/input hashes and environment details. |
+| [`results/summary.json`](results/summary.json) | Counts and threshold sensitivity. |
+| [`results/token_cost_log.json`](results/token_cost_log.json) | Actual encoder input tokens, inference batches, runtime, cache status and API cost. |
+| [`results/evaluation.json`](results/evaluation.json) | Unit-test results and labeled evidence checks. |
+| [`results/reproducibility.json`](results/reproducibility.json) | CSV and audit hashes from three independent processes. |
+| [`results/encoder_verification.json`](results/encoder_verification.json) | ONNX embedding comparison with independent Sentence Transformers reference vectors. |
+| [`results/dashboard_checks.json`](results/dashboard_checks.json) | Streamlit interaction and explanation-refresh checks. |
+| [`results/explanation_checks.json`](results/explanation_checks.json) | Verification that the explanation update preserved all other export fields. |
+
+There are zero generative LLM calls and no billed API inference. Encoder tokens are counted separately from generated text tokens. Local compute, storage and initial model downloads still consume resources; model download/setup time is excluded from the per-analysis runtime log.
+
+## Validation and reproducibility
+
+After installing dependencies and downloading the semantic model, run:
+
+```powershell
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+.\.venv\Scripts\python.exe -m freight_assistant.evaluate --offline
+.\.venv\Scripts\python.exe -m freight_assistant.reproduce --offline
+.\.venv\Scripts\python.exe -m freight_assistant.verify_encoder
+.\.venv\Scripts\python.exe scripts/check_dashboard.py
+```
+
+The checked-in reports record **43 passing tests**, **20 passing evidence-suitability cases**, **nine dashboard checks**, and identical CSV/audit hashes across **three fresh processes** in the tested environment. Coverage includes weighted rates, calendar gaps, no future-data leakage, peer exclusion, zero baselines, expired/future notes, partial-week coverage and nationwide-versus-peer confusion. The three supplied sample rows also match the expected numeric values, flags and note IDs.
+
+The evidence cases are development checks, not an independent held-out benchmark. The supplied data has no complete anomaly ground truth, so the project does not claim overall anomaly precision or recall. Reproducibility comparisons use the same inputs, code, configuration, model and environment; runtime/cache logs are kept outside the deterministic audit comparison.
+
+## Repository guide
+
+```text
+app.py                    Streamlit dashboard
+assets/dashboard.css      Dashboard styling
+freight_assistant/
+  validation.py           Input and output-contract validation
+  metrics.py              Weekly rates and comparison baselines
+  detection.py            Configurable candidate policy
+  retrieval.py            Semantic and lexical note ranking
+  download_model.py       Pinned model download and hash manifest
+  evidence.py             Source validation and evidence checks
+  explanations.py         Measured, route-specific reason text
+  pipeline.py             Shared analysis and export workflow
+  reporting.py            CSV and JSON serialization
+  questions.py            Route/month questions over computed rows
+  evaluate.py             Labeled cases and unit-test runner
+  reproduce.py            Three-process reproducibility check
+  verify_encoder.py       Independent embedding parity check
+data/                     Supplied CSVs and reviewed note metadata
+evaluation/               Evidence cases and reference embeddings
+tests/                    Numerical, evidence and pipeline tests
+scripts/check_dashboard.py Dashboard interaction checks
+results/                  Saved analysis and validation reports
+config.json               Detection and evidence defaults
+decisions.md              Design choices, tradeoffs and limitations
+WALKTHROUGH.md             Ten-minute demonstration guide
+```
+
+## Scope and next steps
+
+This is a local case-study application with ten reviewed notes and file-based inputs. It has no production ingestion service, user authentication, database or unrestricted chatbot. New notes need a reviewed extraction/annotation workflow. A production extension would also need labeled operational data for threshold calibration, monitoring, access controls and evaluation on unseen events. The current design choices and their tradeoffs are documented in [`decisions.md`](decisions.md).
