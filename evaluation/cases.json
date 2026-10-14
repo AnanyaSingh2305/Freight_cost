@@ -1,0 +1,22 @@
+[
+  {"name":"flood first week","route":"Chennai-Bangalore","week":"2025-02-24","own":31,"expected_note":"N001"},
+  {"name":"flood second week","route":"Chennai-Bangalore","week":"2025-03-03","own":23,"expected_note":"N001"},
+  {"name":"festival week","route":"Ahmedabad-Mumbai","week":"2025-01-20","own":29,"expected_note":"N002"},
+  {"name":"fuel plausible six percent contributor","route":"Delhi-Chennai","week":"2025-05-05","own":6,"expected_note":"N003"},
+  {"name":"wrong route flood","route":"Delhi-Jaipur","week":"2025-02-24","own":31,"expected_note":null},
+  {"name":"before flood","route":"Chennai-Bangalore","week":"2025-02-17","own":31,"expected_note":null},
+  {"name":"flood expired","route":"Chennai-Bangalore","week":"2025-03-10","own":22,"expected_note":null},
+  {"name":"recovery is not disruption","route":"Chennai-Bangalore","week":"2025-03-17","own":20,"expected_note":null},
+  {"name":"festival expired","route":"Ahmedabad-Mumbai","week":"2025-01-27","own":29,"expected_note":null},
+  {"name":"festival wrong route","route":"Kolkata-Bhubaneswar","week":"2025-01-20","own":29,"expected_note":null},
+  {"name":"toll outside dataset","route":"Delhi-Chennai","week":"2024-03-11","own":25,"expected_note":null},
+  {"name":"maintenance no cost effect","route":"Mumbai-Delhi","week":"2024-07-29","own":25,"expected_note":null},
+  {"name":"better roads not cost increase","route":"Delhi-Jaipur","week":"2024-05-20","own":25,"expected_note":null},
+  {"name":"fuel cannot explain thirty five percent","route":"Delhi-Chennai","week":"2025-05-05","own":35,"expected_note":null},
+  {"name":"nationwide fuel cannot explain peer premium","route":"Mumbai-Pune","week":"2025-06-23","own":6,"peer":21,"expected_note":null},
+  {"name":"persistent event already in baseline","route":"Mumbai-Delhi","week":"2025-10-06","own":6,"history":["2025-08-11","2025-08-18"],"expected_note":null},
+  {"name":"stable demand not support","route":"Mumbai-Pune","week":"2025-09-22","own":25,"expected_note":null},
+  {"name":"normal corridor not support","route":"Kolkata-Bhubaneswar","week":"2025-06-09","own":25,"expected_note":null},
+  {"name":"tracking costs absorbed","route":"Mumbai-Delhi","week":"2025-10-27","own":25,"expected_note":null},
+  {"name":"mostly after flood recovery","route":"Chennai-Bangalore","week":"2025-03-03","own":25,"work":{"2025-03-08":10,"2025-03-09":90},"expected_note":null}
+]

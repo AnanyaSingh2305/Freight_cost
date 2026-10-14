@@ -1,0 +1,9 @@
+{
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "library": "sentence-transformers 6.1.0",
+  "backend": "torch 2.14.1+cpu",
+  "method": "SentenceTransformer.encode(normalize_embeddings=True) of ten notes sorted by note_id; eval mode, one CPU thread.",
+  "notes_csv_sha256": "875c57a896ac3dfac0f712f8865b287bb5d2bd5423d26e798297b74dce87e6dc",
+  "reference_sha256": "42d971beb62a17b89ae0019fb81316c30d61c0db1c8dbd0782627ad9aae29141"
+}
