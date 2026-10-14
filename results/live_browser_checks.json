@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "url": "http://127.0.0.1:8501/",
+  "page_title": "Freight cost monitor",
+  "method": "Observed the actual browser accessibility tree and screenshots, and interacted with the existing local Streamlit server.",
+  "checks": [
+    "Updated application loaded with the Explained rises metric label",
+    "Run analysis action returned semantic results at the default 15 percent threshold",
+    "Review queue showed 2940 shipments, 728 route-weeks, 23 unexplained flags and 3 explained rises",
+    "Route explorer rendered its live Vega chart",
+    "Ahmedabad-Mumbai festival week showed INR 3.29 per tonne-km, justified verdict and original N002 quote",
+    "March 2025 Chennai-Bangalore question returned the flood note N001 for the applicable weeks",
+    "The same answer retained unexplained verdicts for March 10 and March 17 after the flood event expired",
+    "Opening view visually inspected at the browser's existing narrow viewport"
+  ],
+  "screenshot": "dashboard_preview.jpg",
+  "local_python_version": "3.14.3",
+  "dependency_check": "pip check: No broken requirements found",
+  "vs_code_configuration": "Launch, task and interpreter configurations added; JSON and PowerShell syntax validated. F5 itself was not automated."
+}

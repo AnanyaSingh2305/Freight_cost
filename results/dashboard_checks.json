@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "checks": [
+    "initial render",
+    "summary metrics",
+    "review queue",
+    "row-specific explanations in saved results",
+    "route explorer selection",
+    "grounded route/month answer",
+    "semantic inference rerun",
+    "interactive threshold and actual rerun",
+    "source update refreshes cached explanations and preserves active settings"
+  ],
+  "exceptions": 0,
+  "visual_verification": "Separate live-browser evidence is recorded in results/live_browser_checks.json when available.",
+  "method": "Streamlit AppTest executes app.py and its widget interactions; not a browser screenshot test."
+}

@@ -1,0 +1,65 @@
+{
+  "passed": true,
+  "rows": 728,
+  "columns": [
+    "route",
+    "week_of",
+    "cost_per_tonne_km",
+    "vs_own_history",
+    "vs_similar_routes",
+    "flagged",
+    "matched_note_id",
+    "reason"
+  ],
+  "all_seven_non_reason_columns_identical_to_download": true,
+  "old_distinct_reasons": 7,
+  "new_distinct_reasons": 728,
+  "flags": {
+    "No": 702,
+    "No (justified)": 3,
+    "Yes": 23
+  },
+  "reason_policy": "Deterministic measured comparisons and relevant note checks; no invented causes or random wording.",
+  "examples": [
+    {
+      "route": "Ahmedabad-Mumbai",
+      "week_of": "2025-01-20",
+      "cost_per_tonne_km": "3.29",
+      "vs_own_history": "+29.5% vs this route's past average",
+      "vs_similar_routes": "+22.5% vs similar-length routes this week",
+      "flagged": "No (justified)",
+      "matched_note_id": "N002",
+      "reason": "Ahmedabad-Mumbai, week of 2025-01-20. Cost INR 3.29/tonne-km. +29.5% vs history (INR 2.54/tonne-km; 8 prior weeks). +22.5% vs same-type peers (INR 2.69/tonne-km; 2 other routes). Threshold 15% met against history and peers. +26.3% vs the previous observed week. Justified by applicable context: note N002 dated 2025-01-20 describes a temporary regional festival surcharge on Ahmedabad-Mumbai; event window 2025-01-20 to 2025-01-26. Exact evidence: \"temporary surcharge applied by transporters\" Applies to 100.0% of this week's shipment tonne-km. This is a supported contextual explanation, not proof of the precise causal amount."
+    },
+    {
+      "route": "Chennai-Bangalore",
+      "week_of": "2025-03-10",
+      "cost_per_tonne_km": "3.57",
+      "vs_own_history": "+22.1% vs this route's past average",
+      "vs_similar_routes": "+33.8% vs similar-length routes this week",
+      "flagged": "Yes",
+      "matched_note_id": "",
+      "reason": "Chennai-Bangalore, week of 2025-03-10. Cost INR 3.57/tonne-km. +22.1% vs history (INR 2.93/tonne-km; 8 prior weeks). +33.8% vs same-type peers (INR 2.67/tonne-km; 2 other routes). Threshold 15% met against history and peers. +2.7% vs the previous observed week. Unexplained rise; flagged for human review. Note N001's event window (2025-02-24 to 2025-03-08) covers none of this week's shipment work."
+    },
+    {
+      "route": "Delhi-Jaipur",
+      "week_of": "2024-11-11",
+      "cost_per_tonne_km": "4.17",
+      "vs_own_history": "+35.5% vs this route's past average",
+      "vs_similar_routes": "+21.0% vs similar-length routes this week",
+      "flagged": "Yes",
+      "matched_note_id": "",
+      "reason": "Delhi-Jaipur, week of 2024-11-11. Cost INR 4.17/tonne-km. +35.5% vs history (INR 3.08/tonne-km; 8 prior weeks). +21.0% vs same-type peers (INR 3.45/tonne-km; 1 other route). Threshold 15% met against history and peers. +38.8% vs the previous observed week. Unexplained rise; flagged for human review. No available note supports an increase for this route and these shipment dates."
+    },
+    {
+      "route": "Mumbai-Pune",
+      "week_of": "2025-09-15",
+      "cost_per_tonne_km": "3.98",
+      "vs_own_history": "+9.2% vs this route's past average",
+      "vs_similar_routes": "+23.6% vs similar-length routes this week",
+      "flagged": "Yes",
+      "matched_note_id": "",
+      "reason": "Mumbai-Pune, week of 2025-09-15. Cost INR 3.98/tonne-km. +9.2% vs history (INR 3.64/tonne-km; 8 prior weeks). +23.6% vs same-type peers (INR 3.22/tonne-km; 1 other route). Threshold 15% met against peers. +7.1% vs the previous observed week. Unexplained rise; flagged for human review. Note N003 describes a nationwide increase affecting peers too; it does not explain this route's premium over peers."
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "scope": "Typography, visual layout, explanation cards and dashboard interaction regression checks",
+  "live_url": "http://127.0.0.1:8501/",
+  "font_verified": "Heading, body text and metric values resolve to the Segoe UI, Inter, Arial, sans-serif stack; no external font downloads are required.",
+  "desktop": {
+    "viewport": [1280, 850],
+    "checked": ["sidebar and controls", "four summary cards", "ordered review table and status styling", "three baseline explanation cards"]
+  },
+  "mobile": {
+    "viewport": [390, 844],
+    "document_width": 390,
+    "summary_card_top_positions": [310, 310, 427, 427],
+    "heading_top": 93,
+    "checked": ["two-column summary grid", "stacked comparison cards", "readable heading below the toolbar", "no page-level horizontal overflow"]
+  },
+  "normal_viewport_restored": true,
+  "dashboard_interaction_checks_passed": true,
+  "analytical_source_hashes_unchanged": true,
+  "submission_csv_unchanged": true,
+  "screenshots": ["dashboard_preview.jpg", "ui_mobile_preview.jpg"]
+}

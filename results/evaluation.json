@@ -1,0 +1,239 @@
+{
+  "scope": "20 manually reviewed evidence-suitability cases plus independent numerical/contract tests; not a hidden-test anomaly accuracy estimate",
+  "retriever": "semantic",
+  "case_count": 20,
+  "positive_cases": 4,
+  "case_accuracy": 1.0,
+  "justified_precision": 1.0,
+  "supported_evidence_recall": 1.0,
+  "retrieval_recall_at_3_before_guards": 1.0,
+  "unsupported_justifications": 0,
+  "missed_supported_cases": 0,
+  "unit_tests_run": 43,
+  "unit_tests_passed": true,
+  "all_labeled_cases_passed": true,
+  "cases": [
+    {
+      "case": "flood first week",
+      "expected_note": "N001",
+      "actual_note": "N001",
+      "passed": true,
+      "retrieval_top_3": [
+        "N001",
+        "N003",
+        "N002"
+      ]
+    },
+    {
+      "case": "flood second week",
+      "expected_note": "N001",
+      "actual_note": "N001",
+      "passed": true,
+      "retrieval_top_3": [
+        "N001",
+        "N003",
+        "N002"
+      ]
+    },
+    {
+      "case": "festival week",
+      "expected_note": "N002",
+      "actual_note": "N002",
+      "passed": true,
+      "retrieval_top_3": [
+        "N002",
+        "N003",
+        "N001"
+      ]
+    },
+    {
+      "case": "fuel plausible six percent contributor",
+      "expected_note": "N003",
+      "actual_note": "N003",
+      "passed": true,
+      "retrieval_top_3": [
+        "N003",
+        "N001",
+        "N002"
+      ]
+    },
+    {
+      "case": "wrong route flood",
+      "expected_note": null,
+      "actual_note": null,
+      "passed": true,
+      "retrieval_top_3": [
+        "N002",
+        "N003",
+        "N007"
+      ]
+    },
+    {
+      "case": "before flood",
+      "expected_note": null,
+      "actual_note": null,
+      "passed": true,
+      "retrieval_top_3": [
+        "N001",
+        "N003",
+        "N002"
+      ]
+    },
+    {
+      "case": "flood expired",
+      "expected_note": null,
+      "actual_note": null,
+      "passed": true,
+      "retrieval_top_3": [
+        "N001",
+        "N003",
+        "N002"
+      ]
+    },
+    {
+      "case": "recovery is not disruption",
+      "expected_note": null,
+      "actual_note": null,
+      "passed": true,
+      "retrieval_top_3": [
+        "N001",
+        "N003",
+        "N002"
+      ]
+    },
+    {
+      "case": "festival expired",
+      "expected_note": null,
+      "actual_note": null,
+      "passed": true,
+      "retrieval_top_3": [
+        "N002",
+        "N003",
+        "N001"
+      ]
+    },
+    {
+      "case": "festival wrong route",
+      "expected_note": null,
+      "actual_note": null,
+      "passed": true,
+      "retrieval_top_3": [
+        "N008",
+        "N003",
+        "N002"
+      ]
+    },
+    {
+      "case": "toll outside dataset",
+      "expected_note": null,
+      "actual_note": null,
+      "passed": true,
+      "retrieval_top_3": [
+        "N003",
+        "N001",
+        "N002"
+      ]
+    },
+    {
+      "case": "maintenance no cost effect",
+      "expected_note": null,
+      "actual_note": null,
+      "passed": true,
+      "retrieval_top_3": [
+        "N003",
+        "N005",
+        "N002"
+      ]
+    },
+    {
+      "case": "better roads not cost increase",
+      "expected_note": null,
+      "actual_note": null,
+      "passed": true,
+      "retrieval_top_3": [
+        "N003",
+        "N002",
+        "N007"
+      ]
+    },
+    {
+      "case": "fuel cannot explain thirty five percent",
+      "expected_note": null,
+      "actual_note": null,
+      "passed": true,
+      "retrieval_top_3": [
+        "N003",
+        "N001",
+        "N002"
+      ]
+    },
+    {
+      "case": "nationwide fuel cannot explain peer premium",
+      "expected_note": null,
+      "actual_note": null,
+      "passed": true,
+      "retrieval_top_3": [
+        "N003",
+        "N002",
+        "N001"
+      ]
+    },
+    {
+      "case": "persistent event already in baseline",
+      "expected_note": null,
+      "actual_note": null,
+      "passed": true,
+      "retrieval_top_3": [
+        "N003",
+        "N002",
+        "N005"
+      ]
+    },
+    {
+      "case": "stable demand not support",
+      "expected_note": null,
+      "actual_note": null,
+      "passed": true,
+      "retrieval_top_3": [
+        "N003",
+        "N002",
+        "N001"
+      ]
+    },
+    {
+      "case": "normal corridor not support",
+      "expected_note": null,
+      "actual_note": null,
+      "passed": true,
+      "retrieval_top_3": [
+        "N008",
+        "N003",
+        "N002"
+      ]
+    },
+    {
+      "case": "tracking costs absorbed",
+      "expected_note": null,
+      "actual_note": null,
+      "passed": true,
+      "retrieval_top_3": [
+        "N003",
+        "N002",
+        "N005"
+      ]
+    },
+    {
+      "case": "mostly after flood recovery",
+      "expected_note": null,
+      "actual_note": null,
+      "passed": true,
+      "retrieval_top_3": [
+        "N001",
+        "N003",
+        "N002"
+      ]
+    }
+  ],
+  "unit_test_log": "test_all_routes_distractor_rejected (test_evidence.EvidenceTests.test_all_routes_distractor_rejected) ... ok\ntest_fabricated_quote_rejected (test_evidence.EvidenceTests.test_fabricated_quote_rejected) ... ok\ntest_final_verdict_has_grounded_id (test_evidence.EvidenceTests.test_final_verdict_has_grounded_id) ... ok\ntest_flood_expired (test_evidence.EvidenceTests.test_flood_expired) ... ok\ntest_flood_valid_window (test_evidence.EvidenceTests.test_flood_valid_window) ... ok\ntest_fuel_cannot_explain_large_rise (test_evidence.EvidenceTests.test_fuel_cannot_explain_large_rise) ... ok\ntest_future_flood_rejected (test_evidence.EvidenceTests.test_future_flood_rejected) ... ok\ntest_mutated_source_requires_review (test_evidence.EvidenceTests.test_mutated_source_requires_review) ... ok\ntest_national_event_does_not_excuse_peer_premium (test_evidence.EvidenceTests.test_national_event_does_not_excuse_peer_premium) ... ok\ntest_partial_week_uses_shipment_work (test_evidence.EvidenceTests.test_partial_week_uses_shipment_work) ... ok\ntest_persistent_event_already_in_history (test_evidence.EvidenceTests.test_persistent_event_already_in_history) ... ok\ntest_recovery_is_not_cost_increase (test_evidence.EvidenceTests.test_recovery_is_not_cost_increase) ... ok\ntest_unexplained_id_is_blank (test_evidence.EvidenceTests.test_unexplained_id_is_blank) ... ok\ntest_unknown_annotation_fails_closed (test_evidence.EvidenceTests.test_unknown_annotation_fails_closed) ... ok\ntest_wrong_route_rejected (test_evidence.EvidenceTests.test_wrong_route_rejected) ... ok\ntest_elevated_but_falling_is_not_called_below_threshold (test_explanations.ExplanationTests.test_elevated_but_falling_is_not_called_below_threshold) ... ok\ntest_expired_event_explains_rejection_without_assigning_cause (test_explanations.ExplanationTests.test_expired_event_explains_rejection_without_assigning_cause) ... ok\ntest_initial_week_does_not_invent_history (test_explanations.ExplanationTests.test_initial_week_does_not_invent_history) ... ok\ntest_live_threshold_is_used (test_explanations.ExplanationTests.test_live_threshold_is_used) ... ok\ntest_national_note_cannot_become_a_route_specific_cause (test_explanations.ExplanationTests.test_national_note_cannot_become_a_route_specific_cause) ... ok\ntest_peer_only_rise_names_correct_trigger_and_actual_values (test_explanations.ExplanationTests.test_peer_only_rise_names_correct_trigger_and_actual_values) ... ok\ntest_zero_baseline_not_reported_as_missing (test_explanations.ExplanationTests.test_zero_baseline_not_reported_as_missing) ... ok\ntest_calendar_gap_does_not_pull_older_week (test_metrics.MetricsTests.test_calendar_gap_does_not_pull_older_week) ... ok\ntest_config_rejects_bad_threshold (test_metrics.MetricsTests.test_config_rejects_bad_threshold) ... ok\ntest_direction_is_preserved (test_metrics.MetricsTests.test_direction_is_preserved) ... ok\ntest_future_append_cannot_change_past (test_metrics.MetricsTests.test_future_append_cannot_change_past) ... ok\ntest_monday_and_sunday_share_week (test_metrics.MetricsTests.test_monday_and_sunday_share_week) ... ok\ntest_peers_exclude_self_and_other_types (test_metrics.MetricsTests.test_peers_exclude_self_and_other_types) ... ok\ntest_positive_cost_after_zero_baseline_is_flagged (test_metrics.MetricsTests.test_positive_cost_after_zero_baseline_is_flagged) ... ok\ntest_static_high_peer_cost_is_not_a_rise (test_metrics.MetricsTests.test_static_high_peer_cost_is_not_a_rise) ... ok\ntest_trailing_eight_weeks_and_current_exclusion (test_metrics.MetricsTests.test_trailing_eight_weeks_and_current_exclusion) ... ok\ntest_weighted_weekly_rate (test_metrics.MetricsTests.test_weighted_weekly_rate) ... ok\ntest_zero_cost_baseline_is_unavailable (test_metrics.MetricsTests.test_zero_cost_baseline_is_unavailable) ... ok\ntest_duplicate_id_rejected (test_metrics.ValidationTests.test_duplicate_id_rejected) ... ok\ntest_invalid_rows_are_rejected (test_metrics.ValidationTests.test_invalid_rows_are_rejected) ... ok\ntest_csv_contract_and_quoting (test_pipeline.PipelineTests.test_csv_contract_and_quoting) ... ok\ntest_full_dataset_coverage (test_pipeline.PipelineTests.test_full_dataset_coverage) ... ok\ntest_honest_no_generative_usage (test_pipeline.PipelineTests.test_honest_no_generative_usage) ... ok\ntest_justified_rows_are_route_and_date_grounded (test_pipeline.PipelineTests.test_justified_rows_are_route_and_date_grounded) ... ok\ntest_question_is_grounded_and_date_filtered (test_pipeline.PipelineTests.test_question_is_grounded_and_date_filtered) ... ok\ntest_repeat_same_inputs (test_pipeline.PipelineTests.test_repeat_same_inputs) ... ok\ntest_sample_numeric_examples_and_verdicts (test_pipeline.PipelineTests.test_sample_numeric_examples_and_verdicts) ... ok\ntest_unknown_question_requests_supported_scope (test_pipeline.PipelineTests.test_unknown_question_requests_supported_scope) ... ok\n\n----------------------------------------------------------------------\nRan 43 tests in 0.206s\n\nOK\n",
+  "limitations": "Small development-time cases informed the guards; not an independent held-out dataset. Recall@3 is descriptive: all notes are checked after retrieval in this small corpus."
+}

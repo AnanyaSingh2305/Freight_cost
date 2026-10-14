@@ -1,0 +1,108 @@
+{
+  "fresh_processes": 3,
+  "retriever": "semantic",
+  "identical_csv_bytes": true,
+  "identical_full_audit": true,
+  "method": "Three CLI subprocesses recompute all metrics, embeddings for queries, evidence checks and exports. Model weights/document vectors may be cached; analysis results are not cached.",
+  "runs": [
+    {
+      "run": 1,
+      "csv_sha256": "5490cf0e1abfed4e62263e1484ed6f58f7bb00040b3d6f9c13813065be021a2e",
+      "audit_sha256": "9a9d350197ba82d1a631b27b12313da5124d9293a822cf0edfcc586fdeb04d17",
+      "input_sha256": {
+        "shipment_records.csv": "1a2b4d66c4dc694111ba37b966486b5b0650df9ec8687402f3434117b140f4b6",
+        "context_notes.csv": "875c57a896ac3dfac0f712f8865b287bb5d2bd5423d26e798297b74dce87e6dc",
+        "sample_output_format_v2.csv": "1ea902faca37bef6816e0878dc17bdb509a88f9ff9d4f101373e3af03994201f",
+        "note_annotations.json": "d289f7b94bda2111e78cf649fb86a0a11ef85e2cd686f48597523506c502224e"
+      },
+      "configuration": {
+        "anomaly_threshold_pct": 15.0,
+        "minimum_rise_pct": 0.0,
+        "minimum_evidence_coverage": 0.75,
+        "magnitude_tolerance_pct": 2.0
+      },
+      "summary": {
+        "shipment_count": 2940,
+        "route_count": 7,
+        "route_week_count": 728,
+        "anomaly_candidates": 26,
+        "verdict_counts": {
+          "justified": 3,
+          "normal": 702,
+          "unexplained": 23
+        },
+        "threshold_sensitivity_candidate_counts": {
+          "10.0": 81,
+          "15.0": 26,
+          "20.0": 19
+        }
+      }
+    },
+    {
+      "run": 2,
+      "csv_sha256": "5490cf0e1abfed4e62263e1484ed6f58f7bb00040b3d6f9c13813065be021a2e",
+      "audit_sha256": "9a9d350197ba82d1a631b27b12313da5124d9293a822cf0edfcc586fdeb04d17",
+      "input_sha256": {
+        "shipment_records.csv": "1a2b4d66c4dc694111ba37b966486b5b0650df9ec8687402f3434117b140f4b6",
+        "context_notes.csv": "875c57a896ac3dfac0f712f8865b287bb5d2bd5423d26e798297b74dce87e6dc",
+        "sample_output_format_v2.csv": "1ea902faca37bef6816e0878dc17bdb509a88f9ff9d4f101373e3af03994201f",
+        "note_annotations.json": "d289f7b94bda2111e78cf649fb86a0a11ef85e2cd686f48597523506c502224e"
+      },
+      "configuration": {
+        "anomaly_threshold_pct": 15.0,
+        "minimum_rise_pct": 0.0,
+        "minimum_evidence_coverage": 0.75,
+        "magnitude_tolerance_pct": 2.0
+      },
+      "summary": {
+        "shipment_count": 2940,
+        "route_count": 7,
+        "route_week_count": 728,
+        "anomaly_candidates": 26,
+        "verdict_counts": {
+          "justified": 3,
+          "normal": 702,
+          "unexplained": 23
+        },
+        "threshold_sensitivity_candidate_counts": {
+          "10.0": 81,
+          "15.0": 26,
+          "20.0": 19
+        }
+      }
+    },
+    {
+      "run": 3,
+      "csv_sha256": "5490cf0e1abfed4e62263e1484ed6f58f7bb00040b3d6f9c13813065be021a2e",
+      "audit_sha256": "9a9d350197ba82d1a631b27b12313da5124d9293a822cf0edfcc586fdeb04d17",
+      "input_sha256": {
+        "shipment_records.csv": "1a2b4d66c4dc694111ba37b966486b5b0650df9ec8687402f3434117b140f4b6",
+        "context_notes.csv": "875c57a896ac3dfac0f712f8865b287bb5d2bd5423d26e798297b74dce87e6dc",
+        "sample_output_format_v2.csv": "1ea902faca37bef6816e0878dc17bdb509a88f9ff9d4f101373e3af03994201f",
+        "note_annotations.json": "d289f7b94bda2111e78cf649fb86a0a11ef85e2cd686f48597523506c502224e"
+      },
+      "configuration": {
+        "anomaly_threshold_pct": 15.0,
+        "minimum_rise_pct": 0.0,
+        "minimum_evidence_coverage": 0.75,
+        "magnitude_tolerance_pct": 2.0
+      },
+      "summary": {
+        "shipment_count": 2940,
+        "route_count": 7,
+        "route_week_count": 728,
+        "anomaly_candidates": 26,
+        "verdict_counts": {
+          "justified": 3,
+          "normal": 702,
+          "unexplained": 23
+        },
+        "threshold_sensitivity_candidate_counts": {
+          "10.0": 81,
+          "15.0": 26,
+          "20.0": 19
+        }
+      }
+    }
+  ]
+}

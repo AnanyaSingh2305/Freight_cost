@@ -1,0 +1,16 @@
+{
+  "shipment_count": 2940,
+  "route_count": 7,
+  "route_week_count": 728,
+  "anomaly_candidates": 26,
+  "verdict_counts": {
+    "justified": 3,
+    "normal": 702,
+    "unexplained": 23
+  },
+  "threshold_sensitivity_candidate_counts": {
+    "10.0": 81,
+    "15.0": 26,
+    "20.0": 19
+  }
+}
