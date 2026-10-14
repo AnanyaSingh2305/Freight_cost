@@ -1,0 +1,6 @@
+{
+  "anomaly_threshold_pct": 15.0,
+  "minimum_rise_pct": 0.0,
+  "minimum_evidence_coverage": 0.75,
+  "magnitude_tolerance_pct": 2.0
+}

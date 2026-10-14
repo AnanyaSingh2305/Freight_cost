@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.cache/
+results/repro_runs/
+*.pyc
+.streamlit/secrets.toml
+
+# Local credentials and transient files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.partial
+results/lexical_check/

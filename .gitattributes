@@ -1,0 +1,2 @@
+# Preserve supplied inputs and deterministic source/CSV/audit hashes byte-for-byte.
+* -text

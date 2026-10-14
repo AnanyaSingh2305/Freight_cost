@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "provenance": "Source-text annotations reviewed during implementation. These are event metadata, not route-week labels. Unknown notes cannot justify costs until reviewed.",
+  "annotations": [
+    {
+      "note_id": "N001",
+      "source_sha256": "bf5622c52b090af0d48f2e7a9559a883a43112a170675cecbe06ca9150212e75",
+      "start_date": "2025-02-24",
+      "end_date": "2025-03-08",
+      "effect": "increase",
+      "evidence_quote": "forcing longer detours and higher trip costs.",
+      "summary": "flooding with detours and higher trip costs",
+      "maximum_increase_pct": null,
+      "interpretation": "Explicit dates in the note; recovery from March 9 is excluded."
+    },
+    {
+      "note_id": "N002",
+      "source_sha256": "53c2237e55225a0c9e7511c08220005eb5fc225ee62e3a9e90b1693394e0df25",
+      "start_date": "2025-01-20",
+      "end_date": "2025-01-26",
+      "effect": "increase",
+      "evidence_quote": "temporary surcharge applied by transporters",
+      "summary": "a temporary regional festival surcharge",
+      "maximum_increase_pct": null,
+      "interpretation": "Festival week is interpreted as the Monday-Sunday week containing the note date."
+    },
+    {
+      "note_id": "N003",
+      "source_sha256": "a2bb1afbff822e44af1fa77fdc98cb6c4098e9cb1e68886978b9155bd85d6e5a",
+      "start_date": "2025-05-05",
+      "end_date": null,
+      "effect": "increase",
+      "evidence_quote": "pushing up transportation costs across all routes by roughly 5-7%.",
+      "summary": "a nationwide diesel price increase of roughly 5-7%",
+      "maximum_increase_pct": 7.0,
+      "interpretation": "Persistent price level starting on note date; no end is specified. Magnitude safeguard applies."
+    },
+    {
+      "note_id": "N004",
+      "source_sha256": "6d2309c2d346564d58cb019f8c78a3a508d6b198fec906a9ed0d1c022f10675c",
+      "start_date": null,
+      "end_date": null,
+      "effect": "no_increase",
+      "evidence_quote": "A new toll plaza was commissioned on a national highway stretch, but the affected routes are not part of this dataset.",
+      "summary": "no supported cost increase",
+      "maximum_increase_pct": null,
+      "interpretation": "Source is irrelevant, describes normal/recovered conditions, or explicitly says rates were unaffected."
+    },
+    {
+      "note_id": "N005",
+      "source_sha256": "fd15d0a00d95a3994500b13765c7c03e46b7d67d92122274f94b02886af16174",
+      "start_date": null,
+      "end_date": null,
+      "effect": "no_increase",
+      "evidence_quote": "Scheduled highway maintenance work between Mumbai and Delhi caused minor delays for about a week; costs were not significantly affected.",
+      "summary": "no supported cost increase",
+      "maximum_increase_pct": null,
+      "interpretation": "Source is irrelevant, describes normal/recovered conditions, or explicitly says rates were unaffected."
+    },
+    {
+      "note_id": "N006",
+      "source_sha256": "34e05946df2f7d22422601c42e7d1b08717c9ea574eaa10ccc5d28ed0c92618b",
+      "start_date": null,
+      "end_date": null,
+      "effect": "no_increase",
+      "evidence_quote": "A logistics industry report noted overall demand for freight capacity remained stable this quarter with no major disruptions reported.",
+      "summary": "no supported cost increase",
+      "maximum_increase_pct": null,
+      "interpretation": "Source is irrelevant, describes normal/recovered conditions, or explicitly says rates were unaffected."
+    },
+    {
+      "note_id": "N007",
+      "source_sha256": "dc7b5af544c06c3174e51834d06c40709a6aa5fcfc7b0d4004a306940f7e896a",
+      "start_date": null,
+      "end_date": null,
+      "effect": "no_increase",
+      "evidence_quote": "Local authorities announced improved road conditions on the Delhi-Jaipur stretch after resurfacing work was completed.",
+      "summary": "no supported cost increase",
+      "maximum_increase_pct": null,
+      "interpretation": "Source is irrelevant, describes normal/recovered conditions, or explicitly says rates were unaffected."
+    },
+    {
+      "note_id": "N008",
+      "source_sha256": "a4ebeae3e6e82ae7893023e425237351389bc25994b325dffb7cd0e370e1dc25",
+      "start_date": null,
+      "end_date": null,
+      "effect": "no_increase",
+      "evidence_quote": "No significant disruptions were reported on the Kolkata-Bhubaneswar corridor this quarter; freight movement remained normal.",
+      "summary": "no supported cost increase",
+      "maximum_increase_pct": null,
+      "interpretation": "Source is irrelevant, describes normal/recovered conditions, or explicitly says rates were unaffected."
+    },
+    {
+      "note_id": "N009",
+      "source_sha256": "7313f23904f325486d5434e5c2edde43a6166fcdb33978ded615276f35e89609",
+      "start_date": null,
+      "end_date": null,
+      "effect": "no_increase",
+      "evidence_quote": "Highway authorities confirmed the Chennai-Bangalore route returned to normal conditions after flood-related repairs were completed.",
+      "summary": "no supported cost increase",
+      "maximum_increase_pct": null,
+      "interpretation": "Source is irrelevant, describes normal/recovered conditions, or explicitly says rates were unaffected."
+    },
+    {
+      "note_id": "N010",
+      "source_sha256": "f9fe9114320d0ca0c2a8cc69d0403ed87ef7a85e1693c819929c3d94a98fa743",
+      "start_date": null,
+      "end_date": null,
+      "effect": "no_increase",
+      "evidence_quote": "A new vehicle tracking mandate was introduced for commercial fleets; compliance costs were absorbed by transporters without a rate change.",
+      "summary": "no supported cost increase",
+      "maximum_increase_pct": null,
+      "interpretation": "Source is irrelevant, describes normal/recovered conditions, or explicitly says rates were unaffected."
+    }
+  ]
+}
