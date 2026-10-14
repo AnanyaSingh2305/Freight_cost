@@ -2,20 +2,23 @@
 
 from dataclasses import asdict
 import json
-from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 
-from freight_assistant.detection import Config
+from freight_assistant.detection import Config, load_config
+from freight_assistant.dashboard_state import analysis_revision, load_saved
 from freight_assistant.pipeline import ROOT, analyze
 from freight_assistant.questions import answer_question
-from freight_assistant.reporting import csv_text, file_hash
-
-ANALYSIS_REVISION = tuple((path.name, file_hash(path))
-                          for path in sorted((ROOT / "freight_assistant").glob("*.py")))
+from freight_assistant.reporting import csv_text
 
 st.set_page_config(page_title="Freight cost monitor", page_icon="🚚", layout="wide")
+try:
+    defaults = load_config(ROOT / "config.json")
+    ANALYSIS_REVISION = analysis_revision(ROOT)
+except (OSError, ValueError) as exc:
+    st.error(f"Project inputs or configuration could not load: {exc}")
+    st.stop()
 stylesheet = (ROOT / "assets/dashboard.css").read_text(encoding="utf-8")
 st.markdown(f"<style>{stylesheet}</style>", unsafe_allow_html=True)
 
@@ -24,19 +27,6 @@ st.markdown(f"<style>{stylesheet}</style>", unsafe_allow_html=True)
 def run_analysis(settings, mode, revision):
     rows, audit, cost = analyze(config=Config(**settings), mode=mode)
     return {"rows": rows, "audit": audit, "cost": cost, "revision": revision}
-
-
-def load_saved():
-    audit_path = ROOT / "results/audit.json"
-    cost_path = ROOT / "results/token_cost_log.json"
-    if audit_path.exists() and cost_path.exists():
-        audit = json.loads(audit_path.read_text(encoding="utf-8"))
-        if any(audit["source_sha256"].get(str(Path("freight_assistant") / name)) != digest
-               for name, digest in ANALYSIS_REVISION):
-            return None
-        return {"rows": audit["rows"], "audit": audit,
-                "cost": json.loads(cost_path.read_text(encoding="utf-8")), "revision": ANALYSIS_REVISION}
-    return None
 
 
 def comparison_basis(key):
@@ -74,7 +64,7 @@ with st.sidebar:
     st.caption("Understand the cost of every route.")
     with st.form("analysis_settings"):
         st.markdown("**Analysis settings**")
-        threshold = st.slider("Unusual increase threshold (%)", 5, 50, 15, 1,
+        threshold = st.slider("Unusual increase threshold (%)", 5, 50, min(50, max(5, round(defaults.anomaly_threshold_pct))), 1,
                               help="A lower threshold catches more increases. A route must also show a rise versus its past.")
         retrieval_label = st.selectbox("Evidence search", ["Semantic · local AI", "Lexical · offline baseline"],
                                       help="Semantic searches by meaning. Lexical uses matching words. Both apply the same evidence checks.")
@@ -95,7 +85,11 @@ st.markdown('<p class="hero-description">Spot unusual increases. Understand the 
             unsafe_allow_html=True)
 
 if "analysis" not in st.session_state:
-    st.session_state.analysis = load_saved()
+    try:
+        st.session_state.analysis = load_saved(ROOT, ANALYSIS_REVISION)
+    except (OSError, ValueError) as exc:
+        st.warning(f"Saved results could not load: {exc}. Click Run analysis to regenerate them.")
+        st.session_state.analysis = None
 elif (st.session_state.analysis is not None
       and st.session_state.analysis.get("revision") != ANALYSIS_REVISION):
     active = st.session_state.analysis["audit"]
@@ -106,7 +100,7 @@ elif (st.session_state.analysis is not None
         st.error(f"Updated analysis could not run: {exc}")
         st.stop()
 if execute:
-    settings = {**asdict(Config()), "anomaly_threshold_pct": float(threshold)}
+    settings = {**asdict(defaults), "anomaly_threshold_pct": float(threshold)}
     mode = "semantic" if retrieval_label.startswith("Semantic") else "lexical"
     try:
         with st.spinner("Calculating weekly costs and checking evidence…"):
@@ -242,7 +236,10 @@ with validation:
         path = ROOT / "results" / filename
         if path.exists():
             with st.expander(label):
-                st.json(json.loads(path.read_text(encoding="utf-8")), expanded=False)
+                try:
+                    st.json(json.loads(path.read_text(encoding="utf-8")), expanded=False)
+                except (OSError, ValueError) as exc:
+                    st.warning(f"Saved report could not load: {exc}")
     with st.expander("Configuration and threshold sensitivity"):
         st.json({"active_configuration": audit["configuration"],
                  "threshold_sensitivity": summary["threshold_sensitivity_candidate_counts"]}, expanded=True)

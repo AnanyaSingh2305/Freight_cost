@@ -2,6 +2,8 @@
 
 from datetime import date, timedelta
 
+from .detection import meets_threshold
+
 
 def comparison_reason(row, config):
     parts = [f"{row['route']}, week of {row['week_of']}."]
@@ -32,7 +34,7 @@ def comparison_reason(row, config):
         ("peers", "vs_similar_routes_pct", "peer_average"),
     ):
         value = row.get(percent_key)
-        if value is not None and value >= config.anomaly_threshold_pct:
+        if meets_threshold(value, config.anomaly_threshold_pct):
             high.append(label)
         elif row.get(baseline_key) == 0 and rate is not None and rate > 0:
             high.append(f"zero {label} baseline")

@@ -11,6 +11,24 @@ from pathlib import Path
 from .download_model import MODEL_NAME, MODEL_REVISION, ensure_model
 
 
+def load_cached_vectors(path, documents):
+    import numpy as np
+
+    try:
+        vectors = np.load(path, allow_pickle=False)
+    except (OSError, ValueError, EOFError):
+        return None
+    if not isinstance(vectors, np.ndarray):
+        if hasattr(vectors, "close"):
+            vectors.close()
+        return None
+    if (vectors.ndim != 2 or vectors.shape != (documents, 384)
+            or not np.issubdtype(vectors.dtype, np.floating) or not np.isfinite(vectors).all()
+            or not np.allclose(np.linalg.norm(vectors, axis=1), 1.0, atol=1e-4)):
+        return None
+    return vectors
+
+
 def query_for(row):
     return (f"Why did freight shipping costs increase on {row['route']} during the week of "
             f"{row['week_of']}? Evidence of fuel price rises, toll increases, flooding, "
@@ -60,8 +78,8 @@ class NoteRetriever:
             cache_path.mkdir(parents=True, exist_ok=True)
             digest = hashlib.sha256(("onnx-fp32-v1\n" + MODEL_REVISION + "\n" + "\n".join(self.texts)).encode()).hexdigest()
             vector_file = cache_path / f"notes-{digest}.npy"
-            if vector_file.exists():
-                self.vectors = np.load(vector_file, allow_pickle=False)
+            self.vectors = load_cached_vectors(vector_file, len(notes))
+            if self.vectors is not None:
                 self.stats["document_embedding_cache_hit"] = True
             else:
                 self.vectors = self._encode(self.texts)

@@ -24,8 +24,14 @@ def ensure_model(cache_dir, offline=False):
     manifest_path = directory / "artifact_manifest.json"
     if manifest_path.exists():
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        if manifest.get("revision") != MODEL_REVISION or set(manifest["files"]) != set(MODEL_FILES):
+        if (not isinstance(manifest, dict) or manifest.get("revision") != MODEL_REVISION
+                or not isinstance(manifest.get("files"), dict)
+                or set(manifest["files"]) != set(MODEL_FILES)):
             raise ValueError("Model artifact manifest does not match the pinned revision")
+        if any(not isinstance(digest, str) or len(digest) != 64
+               or any(char not in "0123456789abcdef" for char in digest)
+               for digest in manifest["files"].values()):
+            raise ValueError("Model artifact manifest contains invalid SHA-256 hashes")
         for filename in MODEL_FILES:
             file = directory / filename
             if not file.is_file() or sha256(file) != manifest["files"][filename]:

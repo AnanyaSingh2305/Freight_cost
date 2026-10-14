@@ -11,7 +11,22 @@ def monday(day):
 
 def percent_change(current, baseline):
     # A percentage against a zero baseline is mathematically undefined.
-    return None if baseline is None or baseline <= 0 else 100.0 * (current / baseline - 1.0)
+    if baseline is None or baseline <= 0:
+        return None
+    result = 100.0 * (current / baseline - 1.0)
+    if not isfinite(result):
+        raise ValueError("Percentage change exceeds the supported finite numeric range")
+    return result
+
+
+def mean_rate(values):
+    if not values:
+        return None
+    try:
+        return fsum(values) / len(values)
+    except OverflowError:
+        # The mean can be representable even if an intermediate sum is not.
+        return fsum(value / len(values) for value in values)
 
 
 def weekly_metrics(shipments):
@@ -21,8 +36,11 @@ def weekly_metrics(shipments):
                 monday(shipment.shipment_date))].append(shipment)
     rows = []
     for (origin, destination, route_type, week), members in sorted(groups.items()):
-        total_work = fsum(s.tonne_km for s in members)
-        total_cost = fsum(s.cost for s in members)
+        try:
+            total_work = fsum(s.tonne_km for s in members)
+            total_cost = fsum(s.cost for s in members)
+        except OverflowError as exc:
+            raise ValueError(f"Weekly totals exceed the numeric range: {origin}-{destination}, {week}") from exc
         rate = total_cost / total_work
         if not all(isfinite(v) for v in (total_work, total_cost, rate)):
             raise ValueError("Nonfinite aggregate; input magnitudes are too large")
@@ -47,10 +65,10 @@ def weekly_metrics(shipments):
             cutoff = (week - timedelta(weeks=8)).isoformat()
             prior = [r["cost_per_tonne_km"] for r in route_rows[:i]
                      if cutoff <= r["week_of"] < row["week_of"]]
-            own = fsum(prior) / len(prior) if prior else None
+            own = mean_rate(prior)
             others = [r["cost_per_tonne_km"] for r in peers[(row["route_type"], row["week_of"])]
                       if (r["origin"], r["destination"]) != (row["origin"], row["destination"])]
-            peer = fsum(others) / len(others) if others else None
+            peer = mean_rate(others)
             previous = route_rows[i - 1]["cost_per_tonne_km"] if i else None
             row.update(history_average=own, history_weeks=len(prior), peer_average=peer,
                        history_week_dates=[r["week_of"] for r in route_rows[:i]

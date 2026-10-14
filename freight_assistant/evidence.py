@@ -11,6 +11,7 @@ from math import fsum
 from pathlib import Path
 
 from .explanations import comparison_reason, rejected_context
+from .detection import meets_threshold
 
 
 def note_fingerprint(note):
@@ -20,11 +21,21 @@ def note_fingerprint(note):
 
 def load_annotations(path, notes):
     document = json.loads(Path(path).read_text(encoding="utf-8"))
-    if document.get("schema_version") != 1:
+    if not isinstance(document, dict) or document.get("schema_version") != 1:
         raise ValueError("Unsupported note annotation schema")
+    if not isinstance(document.get("annotations"), list):
+        raise ValueError("Note annotations must contain an annotations list")
     known = {note.note_id: note for note in notes}
     annotations = {}
     for item in document["annotations"]:
+        required = {"note_id", "source_sha256", "evidence_quote", "effect", "summary", "interpretation"}
+        if not isinstance(item, dict) or not required.issubset(item):
+            raise ValueError("Each note annotation needs note_id, source_sha256, evidence_quote, effect, summary and interpretation")
+        if any(not isinstance(item[key], str) or not item[key].strip() for key in required):
+            raise ValueError("Required annotation fields must be nonempty strings")
+        if any(item.get(key) is not None and not isinstance(item[key], str)
+               for key in ("start_date", "end_date")):
+            raise ValueError("Annotation dates must be ISO date strings or null")
         note_id = item["note_id"]
         if note_id in annotations:
             raise ValueError(f"Duplicate annotation: {note_id}")
@@ -44,7 +55,7 @@ def load_annotations(path, notes):
         if item["effect"] == "increase" and not start:
             raise ValueError(f"Increase annotation needs a start date: {note_id}")
         maximum = item.get("maximum_increase_pct")
-        if maximum is not None and (not isinstance(maximum, (float, int)) or not 0 <= maximum <= 1000):
+        if maximum is not None and (type(maximum) not in (float, int) or not 0 <= maximum <= 1000):
             raise ValueError(f"Invalid magnitude annotation: {note_id}")
         annotations[note_id] = item
     return annotations
@@ -82,7 +93,7 @@ def assess_note(row, note, annotation, config):
         # A nationwide event does not explain a route-specific peer premium,
         # because the same event also applies to its peers.
         if (note.applies_to == "All Routes" and peer is not None
-                and peer >= config.anomaly_threshold_pct):
+                and meets_threshold(peer, config.anomaly_threshold_pct)):
             result["rejection"] = "national_event_does_not_explain_peer_premium"
         elif (end is None and history_dates
               and all(date.fromisoformat(day) >= start for day in history_dates)):
