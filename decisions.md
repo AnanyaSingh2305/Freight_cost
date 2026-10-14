@@ -136,4 +136,6 @@ The [functional audit](AUDIT.md) exposed an additional requirement: a saved resu
 
 The UI also reads the evidence defaults from `config.json`, keeping its settings consistent with the CLI. Threshold comparisons use a small floating-point tolerance so a mathematically exact 15% rise is not lost to binary rounding. This does not round genuinely lower increases up to the threshold.
 
+A source update also needs the running server to use the new functions. The dashboard refreshes already imported analysis modules in dependency order when their source fingerprint changes. This addresses a stale-import failure found in the live server that a fresh-process test could not expose.
+
 The next steps depend on real operational needs: collect labeled review outcomes to calibrate thresholds, evaluate unseen events, add a reviewed workflow for new notes, and introduce persistent ingestion and monitoring as volume grows. Authentication and access controls would be needed before sharing shipment data across users. Those are future extensions; the current deliverable remains a local, file-based application.

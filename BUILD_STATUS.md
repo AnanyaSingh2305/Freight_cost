@@ -34,7 +34,7 @@ Candidate-count sensitivity: 81 at 10%, 26 at 15%, and 19 at 20%. The threshold 
 - `results/encoder_verification.json`: all ten ONNX note embeddings match independently generated Sentence Transformers reference vectors within `1e-5` tolerance. Maximum absolute difference is approximately `1.64e-7`.
 - `results/dashboard_checks.json`: initial render, summary metrics, review queue, route selection, grounded question answer, real semantic inference, and threshold/lexical rerun pass with zero application exceptions.
 - `results/explanation_checks.json`: the eight-column contract is preserved, all seven non-reason columns match the earlier export across 728 rows, and representative explanations are recorded. Reasons vary with measured facts; unknown causes remain unexplained.
-- `AUDIT.md` and `results/robustness_checks.json`: six issue groups fixed; six dashboard recovery checks pass. Input changes invalidate caches, corrupt saved results remain recoverable, and configuration/metadata/numeric boundaries are validated. The supplied-data CSV hash is unchanged.
+- `AUDIT.md` and `results/robustness_checks.json`: seven issue groups fixed; seven dashboard recovery checks pass. Input changes invalidate caches, corrupt saved results remain recoverable, stale imports refresh after source updates, and configuration/metadata/numeric boundaries are validated. The supplied-data CSV hash is unchanged.
 - `results/live_browser_checks.json`: the running local dashboard was verified in the browser; `results/dashboard_preview.jpg` shows the live opening view.
 - `results/token_cost_log.json`: actual local encoder tokens and inference batches are recorded separately from generative usage. Zero generative LLM calls and USD 0 API spend.
 

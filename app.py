@@ -1,10 +1,40 @@
 """Run with: python -m streamlit run app.py"""
 
 from dataclasses import asdict
+import hashlib
+import importlib
 import json
+from pathlib import Path
+import sys
 
 import pandas as pd
 import streamlit as st
+
+import freight_assistant
+
+
+def refresh_analysis_modules():
+    """Refresh imported business rules when a running server sees changed source."""
+    package_path = Path(freight_assistant.__file__).parent
+    revision = tuple((path.name, hashlib.sha256(path.read_bytes()).hexdigest())
+                     for path in sorted(package_path.glob("*.py")))
+    if getattr(freight_assistant, "_dashboard_source_revision", None) == revision:
+        return
+    pipeline = sys.modules.get("freight_assistant.pipeline")
+    workspace_root = getattr(pipeline, "ROOT", None)
+    # Dependencies precede consumers so their imported function references refresh.
+    for name in ("validation", "detection", "metrics", "download_model", "retrieval",
+                 "explanations", "evidence", "reporting", "questions", "pipeline", "dashboard_state"):
+        module = sys.modules.get(f"freight_assistant.{name}")
+        if module is not None:
+            importlib.reload(module)
+    if workspace_root is not None:
+        # Preserve an explicitly overridden root used for isolated app instances.
+        sys.modules["freight_assistant.pipeline"].ROOT = workspace_root
+    freight_assistant._dashboard_source_revision = revision
+
+
+refresh_analysis_modules()
 
 from freight_assistant.detection import Config, load_config
 from freight_assistant.dashboard_state import analysis_revision, load_saved

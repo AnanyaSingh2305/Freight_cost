@@ -63,6 +63,15 @@ with tempfile.TemporaryDirectory() as temporary:
         clean(recovered)
         assert recovered.warning
         checks.append('corrupt optional evaluation report does not crash the dashboard')
+        import freight_assistant
+        import freight_assistant.detection as detection
+        freight_assistant._dashboard_source_revision = 'previous imported source'
+        with patch.object(detection, 'load_config', None):
+            recovered.run()
+            clean(recovered)
+            assert callable(detection.load_config)
+            assert recovered.session_state['analysis']['audit']['configuration']['minimum_evidence_coverage'] == 0.9
+        checks.append('source changes refresh stale imported functions in a running server')
 
 report = {'passed': True, 'checks': checks, 'application_exceptions': 0,
           'method': 'Streamlit AppTest with isolated source/data/results copies; real lexical recomputation.'}

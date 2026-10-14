@@ -208,9 +208,9 @@ After installing dependencies and downloading the semantic model, run:
 .\.venv\Scripts\python.exe scripts/audit_dashboard.py
 ```
 
-The checked-in reports record **63 passing tests**, **20 passing evidence-suitability cases**, **nine dashboard workflow checks**, **six failure-recovery checks**, and identical CSV/audit hashes across **three fresh processes** in the tested environment. Coverage includes weighted rates, calendar gaps, no future-data leakage, peer exclusion, zero baselines, expired/future notes, partial-week coverage and nationwide-versus-peer confusion. The three supplied sample rows also match the expected numeric values, flags and note IDs.
+The checked-in reports record **63 passing tests**, **20 passing evidence-suitability cases**, **nine dashboard workflow checks**, **seven failure-recovery checks**, and identical CSV/audit hashes across **three fresh processes** in the tested environment. Coverage includes weighted rates, calendar gaps, no future-data leakage, peer exclusion, zero baselines, expired/future notes, partial-week coverage and nationwide-versus-peer confusion. The three supplied sample rows also match the expected numeric values, flags and note IDs.
 
-The [project audit](AUDIT.md) records the reproduced failures and their fixes: stale input caches, exact-threshold rounding, malformed metadata/configuration, corrupt saved reports, invalid vector caches and numerical overflow. The supplied-data CSV remains byte-for-byte unchanged after these fixes.
+The [project audit](AUDIT.md) records the reproduced failures and their fixes: stale input caches, exact-threshold rounding, malformed metadata/configuration, corrupt saved reports, invalid vector caches, numerical overflow and stale imports in a running server. The supplied-data CSV remains byte-for-byte unchanged after these fixes.
 
 The evidence cases are development checks, not an independent held-out benchmark. The supplied data has no complete anomaly ground truth, so the project does not claim overall anomaly precision or recall. Reproducibility comparisons use the same inputs, code, configuration, model and environment; runtime/cache logs are kept outside the deterministic audit comparison.
 
